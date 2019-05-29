@@ -1,5 +1,7 @@
 package service;
 
+import annotation.Overload;
+import com.sun.istack.internal.Nullable;
 import domain.ApplicationUser;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -8,8 +10,6 @@ import util.UtilString;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class HbrntServiceUser {
 
@@ -52,11 +52,180 @@ public class HbrntServiceUser {
 
     }
 
+    @Overload
+    public Result updUser(String login, String newLogin, String newPassword) {
+
+        if (serviceString.isContainEmptyString(login, newLogin, newPassword)) {
+            return Result.INPUT_DATA_ERROR;
+        }
+
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            List<ApplicationUser> resultList = session.createQuery("from ApplicationUser where userLogin = :login", ApplicationUser.class)
+                    .setParameter("login", login)
+                    .getResultList();
+
+            if (resultList.size() != 1) {
+                return Result.ERROR;
+            } else {
+                ApplicationUser appUser = resultList.get(0);
+                appUser.setUserLogin(newLogin);
+                appUser.setPassword(newPassword);
+                session.update(appUser);
+                transaction.commit();
+                return Result.SUCCESS;
+            }
+        } catch (Exception e) {
+            return Result.ERROR;
+        }
+
+    }
+
+    @Overload
+    public Result updUser(int id, String newLogin, String newPassword) {
+
+        if (serviceString.isContainEmptyString(newLogin, newPassword) || id < 1) {
+            return Result.INPUT_DATA_ERROR;
+        }
+
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            List<ApplicationUser> resultList = session.createQuery("from ApplicationUser where id = :id", ApplicationUser.class)
+                    .setParameter("id", id)
+                    .getResultList();
+
+            if (resultList.size() != 1) {
+                return Result.ERROR;
+            } else {
+                ApplicationUser appUser = resultList.get(0);
+                appUser.setUserLogin(newLogin);
+                appUser.setPassword(newPassword);
+                session.update(appUser);
+                transaction.commit();
+                return Result.SUCCESS;
+            }
+        } catch (Exception e) {
+            return Result.ERROR;
+        }
+
+    }
+
+    @Overload
+    public Result delUser(int id) {
+
+        if (id < 1) {
+            return Result.INPUT_DATA_ERROR;
+        }
+
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            List<ApplicationUser> resultList = session.createQuery("from ApplicationUser where id = :id", ApplicationUser.class)
+                    .setParameter("id", id)
+                    .getResultList();
+
+            if (resultList.size() != 1) {
+                return Result.ERROR;
+            } else {
+                ApplicationUser appUser = resultList.get(0);
+                session.delete(appUser);
+                transaction.commit();
+                return Result.SUCCESS;
+            }
+        } catch (Exception e) {
+            return Result.ERROR;
+        }
+
+    }
+
+    @Overload
+    public Result delUser(String login) {
+
+        if (serviceString.isEmpty(login)) {
+            return Result.INPUT_DATA_ERROR;
+        }
+
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            List<ApplicationUser> resultList = session.createQuery("from ApplicationUser where userLogin = :login", ApplicationUser.class)
+                    .setParameter("login", login)
+                    .getResultList();
+
+            if (resultList.size() != 1) {
+                return Result.ERROR;
+            } else {
+                ApplicationUser appUser = resultList.get(0);
+                session.delete(appUser);
+                transaction.commit();
+                return Result.SUCCESS;
+            }
+        } catch (Exception e) {
+            return Result.ERROR;
+        }
+
+    }
+
+    @Nullable
+    @Overload
+    public ApplicationUser getUser(int id) {
+
+        if (id < 1) {
+            return null;
+        }
+
+        try (Session session = sessionFactory.openSession()) {
+            List<ApplicationUser> resultList = session.createQuery("from ApplicationUser where id = :id", ApplicationUser.class)
+                    .setParameter("id", id)
+                    .getResultList();
+            return resultList.size() == 1 ? resultList.get(0) : null;
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
+    @Nullable
+    @Overload
+    public ApplicationUser getUser(String login) {
+
+        if (serviceString.isEmpty(login)) {
+            return null;
+        }
+
+        try (Session session = sessionFactory.openSession()) {
+            List<ApplicationUser> resultList = session.createQuery("from ApplicationUser where userLogin = :login", ApplicationUser.class)
+                    .setParameter("login", login)
+                    .getResultList();
+            return resultList.size() == 1 ? resultList.get(0) : null;
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
+    @Nullable
+    @Overload
+    public ApplicationUser getUser(String login, String password) {
+
+        if (serviceString.isContainEmptyString(login, password)) {
+            return null;
+        }
+
+        try (Session session = sessionFactory.openSession()) {
+            List<ApplicationUser> resultList = session.createQuery("from ApplicationUser where userLogin = :login and password = :password", ApplicationUser.class)
+                    .setParameter("login", login)
+                    .setParameter("password", password)
+                    .getResultList();
+            return resultList.size() == 1 ? resultList.get(0) : null;
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
     public void printUserList() {
 
         try (Session session = sessionFactory.openSession()) {
-            List<ApplicationUser> resultList = session.createQuery(
-                    "from ApplicationUser", ApplicationUser.class)
+            List<ApplicationUser> resultList = session.createQuery("from ApplicationUser", ApplicationUser.class)
                     .getResultList();
             if (resultList.size() == 0) {
                 System.out.println("Empty table `users`");

@@ -179,7 +179,7 @@ public class JDBCServiceUser {
     @Overload
     public ApplicationUser getUser(String login, String password) {
 
-        if (serviceString.isEmpty(login)) {
+        if (serviceString.isContainEmptyString(login, password)) {
             return null;
         }
 

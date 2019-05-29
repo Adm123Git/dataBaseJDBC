@@ -36,11 +36,11 @@ public class JDBCUserAction {
         /*System.out.println("---------------- SELECT ------------------");
         System.out.println("User by Id : " + serviceUser.getUser(4));
         System.out.println("User by login : " + serviceUser.getUser("user_6"));
+        System.out.println("User by login & password: " + serviceUser.getUser("user_2", "qwerty_2"));
         serviceUser.printUserList();
         System.out.println("---------------- DELETE ------------------");
         serviceUser.delUser("user_3");
         serviceUser.delUser(5);
-        System.out.println("After delete :");
         serviceUser.printUserList();
         System.out.println("---------------- UPDATE ------------------");
         serviceUser.updUser("user_1", "user_1_upd", "qwerty_1_upd");
