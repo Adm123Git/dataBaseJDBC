@@ -6,12 +6,17 @@ import java.util.Objects;
 public class JDBCConnectionImpl implements JDBCConnection {
 
     private static final JDBCConnection instance = new JDBCConnectionImpl();
-    private Connection connection = null;
+    private static Connection connection;
 
     static {
         try {
             Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
+            connection = DriverManager.getConnection(
+                    "jdbc:postgresql://localhost:5432/coto-chat",
+                    "postgres",
+                    "root"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -22,19 +27,8 @@ public class JDBCConnectionImpl implements JDBCConnection {
         return instance;
     }
 
-    private void createConnection() throws SQLException {
-        connection = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/coto-chat",
-                "postgres",
-                "root"
-        );
-    }
-
     @Override
-    public Connection getConnection() throws SQLException {
-        if (Objects.isNull(connection)) {
-            createConnection();
-        }
+    public Connection getConnection() {
         return connection;
     }
 

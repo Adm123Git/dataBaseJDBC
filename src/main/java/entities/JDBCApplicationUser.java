@@ -1,6 +1,6 @@
 package entities;
 
-public class ApplicationUser {
+public class JDBCApplicationUser {
 
     private Integer id;
     private String userLogin;
@@ -26,8 +26,8 @@ public class ApplicationUser {
             return this;
         }
 
-        public ApplicationUser build() {
-            ApplicationUser user = new ApplicationUser();
+        public JDBCApplicationUser build() {
+            JDBCApplicationUser user = new JDBCApplicationUser();
             user.id = id;
             user.userLogin = userLogin;
             user.password = password;
@@ -35,7 +35,7 @@ public class ApplicationUser {
         }
     }
 
-    private ApplicationUser(){}
+    private JDBCApplicationUser(){}
 
     public Integer getId() {
         return id;
@@ -65,4 +65,5 @@ public class ApplicationUser {
     public String toString() {
         return "{id: " + id + " | login: " + userLogin + " | password: " + password + "}";
     }
+
 }

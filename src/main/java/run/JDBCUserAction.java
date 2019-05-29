@@ -1,6 +1,6 @@
 package run;
 
-import entities.ApplicationUser;
+import entities.JDBCApplicationUser;
 import interfaces.JDBCConnectionImpl;
 import service.JDBCServiceUser;
 import util.UtilString;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 
-public class UserAction {
+public class JDBCUserAction {
 
     private static JDBCServiceUser serviceUser;
     private static UtilString utilString = UtilString.getInstance();
@@ -48,7 +48,7 @@ public class UserAction {
         serviceUser.printUserList();
         */
         System.out.println("---------------- AUTHORIZATION ------------------");
-        ApplicationUser appUser;
+        JDBCApplicationUser appUser;
         try {
             appUser = userAuth();
             System.out.println(
@@ -62,7 +62,7 @@ public class UserAction {
         System.out.println("---------------- THE END ------------------");
     }
 
-    private static ApplicationUser userAuth() throws IOException {
+    private static JDBCApplicationUser userAuth() throws IOException {
         try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in))) {
             String login = getNotEmptyDataFromConsole(consoleReader, "Login: ");
             String password = getNotEmptyDataFromConsole(consoleReader, "Password: ");

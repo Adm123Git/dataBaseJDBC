@@ -2,7 +2,7 @@ package service;
 
 import annotation.Overload;
 import com.sun.istack.internal.Nullable;
-import entities.ApplicationUser;
+import entities.JDBCApplicationUser;
 import util.UtilString;
 
 import java.sql.Connection;
@@ -120,7 +120,7 @@ public class JDBCServiceUser {
 
     @Nullable
     @Overload
-    public ApplicationUser getUser(int id) {
+    public JDBCApplicationUser getUser(int id) {
 
         if (id < 1) {
             return null;
@@ -134,7 +134,7 @@ public class JDBCServiceUser {
             if (resultSet.getRow() != 1) {
                 return null;
             } else {
-                return new ApplicationUser.Builder()
+                return new JDBCApplicationUser.Builder()
                         .id(resultSet.getInt("id"))
                         .login(resultSet.getString("login"))
                         .password(resultSet.getString("password"))
@@ -149,7 +149,7 @@ public class JDBCServiceUser {
 
     @Nullable
     @Overload
-    public ApplicationUser getUser(String login) {
+    public JDBCApplicationUser getUser(String login) {
 
         if (serviceString.isEmpty(login)) {
             return null;
@@ -163,7 +163,7 @@ public class JDBCServiceUser {
             if (resultSet.getRow() != 1) {
                 return null;
             } else {
-                return new ApplicationUser.Builder()
+                return new JDBCApplicationUser.Builder()
                         .id(resultSet.getInt("id"))
                         .login(resultSet.getString("login"))
                         .password(resultSet.getString("password"))
@@ -177,7 +177,7 @@ public class JDBCServiceUser {
 
     @Nullable
     @Overload
-    public ApplicationUser getUser(String login, String password) {
+    public JDBCApplicationUser getUser(String login, String password) {
 
         if (serviceString.isEmpty(login)) {
             return null;
@@ -192,7 +192,7 @@ public class JDBCServiceUser {
             if (resultSet.getRow() != 1) {
                 return null;
             } else {
-                return new ApplicationUser.Builder()
+                return new JDBCApplicationUser.Builder()
                         .id(resultSet.getInt("id"))
                         .login(resultSet.getString("login"))
                         .password(resultSet.getString("password"))
@@ -212,7 +212,7 @@ public class JDBCServiceUser {
             int resultStringCount = 0;
             while (resultSet.next()) {
                 System.out.println(
-                        new ApplicationUser.Builder()
+                        new JDBCApplicationUser.Builder()
                                 .id(resultSet.getInt("id"))
                                 .login(resultSet.getString("login"))
                                 .password(resultSet.getString("password"))
