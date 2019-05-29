@@ -3,6 +3,7 @@ package service;
 import annotation.Overload;
 import com.sun.istack.internal.Nullable;
 import domain.ApplicationUser;
+import interfaces.UserService;
 import util.UtilString;
 
 import java.sql.Connection;
@@ -10,13 +11,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Objects;
 
-public class JDBCServiceUser {
+public class JDBCServiceUser implements UserService {
 
     private static JDBCServiceUser instance = null;
     private static UtilString serviceString = UtilString.getInstance();
     private Connection connection;
-
-    public enum Result {INPUT_DATA_ERROR, SUCCESS, ERROR}
 
     private JDBCServiceUser(Connection connection) {
         this.connection = connection;
@@ -46,6 +45,7 @@ public class JDBCServiceUser {
 
     }
 
+    @Override
     @Overload
     public Result updUser(String login, String newLogin, String newPassword) {
 
@@ -65,6 +65,7 @@ public class JDBCServiceUser {
 
     }
 
+    @Override
     @Overload
     public Result updUser(int id, String newLogin, String newPassword) {
 
@@ -84,6 +85,7 @@ public class JDBCServiceUser {
 
     }
 
+    @Override
     @Overload
     public Result delUser(int id) {
 
@@ -119,6 +121,7 @@ public class JDBCServiceUser {
     }
 
     @Nullable
+    @Override
     @Overload
     public ApplicationUser getUser(int id) {
 
@@ -148,6 +151,7 @@ public class JDBCServiceUser {
     }
 
     @Nullable
+    @Override
     @Overload
     public ApplicationUser getUser(String login) {
 
@@ -176,6 +180,7 @@ public class JDBCServiceUser {
     }
 
     @Nullable
+    @Override
     @Overload
     public ApplicationUser getUser(String login, String password) {
 
@@ -204,6 +209,7 @@ public class JDBCServiceUser {
 
     }
 
+    @Override
     public void printUserList() {
 
         try {

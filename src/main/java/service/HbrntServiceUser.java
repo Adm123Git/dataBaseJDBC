@@ -3,6 +3,7 @@ package service;
 import annotation.Overload;
 import com.sun.istack.internal.Nullable;
 import domain.ApplicationUser;
+import interfaces.UserService;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -11,13 +12,11 @@ import util.UtilString;
 import java.util.List;
 import java.util.Objects;
 
-public class HbrntServiceUser {
+public class HbrntServiceUser implements UserService {
 
     private static HbrntServiceUser instance = null;
     private static UtilString serviceString = UtilString.getInstance();
     private SessionFactory sessionFactory;
-
-    public enum Result {INPUT_DATA_ERROR, SUCCESS, ERROR}
 
     private HbrntServiceUser(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
@@ -30,6 +29,8 @@ public class HbrntServiceUser {
         return instance;
     }
 
+    @Override
+    @Overload
     public Result addUser(String login, String password) {
 
         if (serviceString.isContainEmptyString(login, password)) {
@@ -52,6 +53,7 @@ public class HbrntServiceUser {
 
     }
 
+    @Override
     @Overload
     public Result updUser(String login, String newLogin, String newPassword) {
 
@@ -81,6 +83,7 @@ public class HbrntServiceUser {
 
     }
 
+    @Override
     @Overload
     public Result updUser(int id, String newLogin, String newPassword) {
 
@@ -110,6 +113,7 @@ public class HbrntServiceUser {
 
     }
 
+    @Override
     @Overload
     public Result delUser(int id) {
 
@@ -137,6 +141,7 @@ public class HbrntServiceUser {
 
     }
 
+    @Override
     @Overload
     public Result delUser(String login) {
 
@@ -165,6 +170,7 @@ public class HbrntServiceUser {
     }
 
     @Nullable
+    @Override
     @Overload
     public ApplicationUser getUser(int id) {
 
@@ -184,6 +190,7 @@ public class HbrntServiceUser {
     }
 
     @Nullable
+    @Override
     @Overload
     public ApplicationUser getUser(String login) {
 
@@ -203,6 +210,7 @@ public class HbrntServiceUser {
     }
 
     @Nullable
+    @Override
     @Overload
     public ApplicationUser getUser(String login, String password) {
 
@@ -222,6 +230,7 @@ public class HbrntServiceUser {
 
     }
 
+    @Override
     public void printUserList() {
 
         try (Session session = sessionFactory.openSession()) {
