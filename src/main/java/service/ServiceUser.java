@@ -1,9 +1,12 @@
 package service;
 
 import annotation.Overload;
+import com.sun.istack.internal.Nullable;
+import entities.ApplicationUser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Objects;
 
 public class ServiceUser {
@@ -69,7 +72,7 @@ public class ServiceUser {
 
         try {
             PreparedStatement delStatement = connection.prepareStatement("delete from users where id = ?");
-            delStatement.setLong(1, id);
+            delStatement.setInt(1, id);
             return delStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.USER_NOT_FOUND;
         } catch (Exception e) {
             return Result.ERROR;
@@ -90,6 +93,97 @@ public class ServiceUser {
             return delStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.USER_NOT_FOUND;
         } catch (Exception e) {
             return Result.ERROR;
+        }
+
+    }
+
+    @Nullable
+    @Overload
+    public ApplicationUser getUser(int id) {
+
+        if (id < 1) {
+            return null;
+        }
+
+        try {
+            PreparedStatement selectStatement = connection.prepareStatement("select * from user where id = ?");
+            selectStatement.setInt(1, id);
+            ResultSet resultSet = selectStatement.executeQuery();
+
+            if (resultSet.getFetchSize() != 1) {
+                return null;
+            } else {
+                resultSet.first();
+                return new ApplicationUser.Builder()
+                        .id(resultSet.getInt("id"))
+                        .login(resultSet.getString("login"))
+                        .password(resultSet.getString("password"))
+                        .build();
+            }
+
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
+    @Nullable
+    @Overload
+    public ApplicationUser getUser(String login) {
+
+        if (serviceString.isEmpty(login)) {
+            return null;
+        }
+
+        try {
+            PreparedStatement selectStatement = connection.prepareStatement("select * from user where login = ?");
+            selectStatement.setString(1, login);
+            ResultSet resultSet = selectStatement.executeQuery();
+
+            if (resultSet.getFetchSize() != 1) {
+                return null;
+            } else {
+                resultSet.first();
+                return new ApplicationUser.Builder()
+                        .id(resultSet.getInt("id"))
+                        .login(resultSet.getString("login"))
+                        .password(resultSet.getString("password"))
+                        .build();
+            }
+
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
+    @Nullable
+    @Overload
+    public ApplicationUser getUser(String login, String password) {
+
+        if (serviceString.isEmpty(login)) {
+            return null;
+        }
+
+        try {
+            PreparedStatement selectStatement = connection.prepareStatement("select * from user where login = ? and password = ?");
+            selectStatement.setString(1, login);
+            selectStatement.setString(2, password);
+            ResultSet resultSet = selectStatement.executeQuery();
+
+            if (resultSet.getFetchSize() != 1) {
+                return null;
+            } else {
+                resultSet.first();
+                return new ApplicationUser.Builder()
+                        .id(resultSet.getInt("id"))
+                        .login(resultSet.getString("login"))
+                        .password(resultSet.getString("password"))
+                        .build();
+            }
+
+        } catch (Exception e) {
+            return null;
         }
 
     }
