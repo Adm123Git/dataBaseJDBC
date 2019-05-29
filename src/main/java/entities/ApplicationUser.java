@@ -60,4 +60,9 @@ public class ApplicationUser {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return "{id: " + id + " | login: " + userLogin + " | password: " + password + "}";
+    }
 }

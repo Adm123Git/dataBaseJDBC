@@ -1,16 +1,16 @@
-package service;
+package util;
 
 import java.util.Arrays;
 import java.util.Objects;
 
-public class ServiceString {
+public class UtilString {
 
-    private static final ServiceString instance = new ServiceString();
+    private static final UtilString instance = new UtilString();
 
-    private ServiceString() {
+    private UtilString() {
     }
 
-    public static ServiceString getInstance() {
+    public static UtilString getInstance() {
         return instance;
     }
 

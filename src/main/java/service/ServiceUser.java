@@ -3,6 +3,7 @@ package service;
 import annotation.Overload;
 import com.sun.istack.internal.Nullable;
 import entities.ApplicationUser;
+import util.UtilString;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,10 +13,10 @@ import java.util.Objects;
 public class ServiceUser {
 
     private static ServiceUser instance = null;
-    private static ServiceString serviceString = ServiceString.getInstance();
+    private static UtilString serviceString = UtilString.getInstance();
     private Connection connection;
 
-    enum Result {INPUT_DATA_ERROR, SUCCESS, ERROR, USER_EXIST, USER_NOT_FOUND}
+    public enum Result {INPUT_DATA_ERROR, SUCCESS, ERROR}
 
     private ServiceUser(Connection connection) {
         this.connection = connection;
@@ -38,13 +39,14 @@ public class ServiceUser {
             PreparedStatement addStatement = connection.prepareStatement("insert into users (login, password) values (?, ?)");
             addStatement.setString(1, login);
             addStatement.setString(2, password);
-            return addStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.USER_EXIST;
+            return addStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.ERROR;
         } catch (Exception e) {
             return Result.ERROR;
         }
 
     }
 
+    @Overload
     public Result updUser(String login, String newLogin, String newPassword) {
 
         if (serviceString.isContainEmptyString(login, newLogin, newPassword)) {
@@ -52,11 +54,30 @@ public class ServiceUser {
         }
 
         try {
-            PreparedStatement updStatement = connection.prepareStatement("update users set (login = ?, password = ?) where login = ?");
+            PreparedStatement updStatement = connection.prepareStatement("update users set login = ?, password = ? where login = ?");
             updStatement.setString(1, newLogin);
             updStatement.setString(2, newPassword);
             updStatement.setString(3, login);
-            return updStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.USER_NOT_FOUND;
+            return updStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.ERROR;
+        } catch (Exception e) {
+            return Result.ERROR;
+        }
+
+    }
+
+    @Overload
+    public Result updUser(int id, String newLogin, String newPassword) {
+
+        if (serviceString.isContainEmptyString(newLogin, newPassword) || id < 1) {
+            return Result.INPUT_DATA_ERROR;
+        }
+
+        try {
+            PreparedStatement updStatement = connection.prepareStatement("update users set login = ?, password = ? where id = ?");
+            updStatement.setString(1, newLogin);
+            updStatement.setString(2, newPassword);
+            updStatement.setInt(3, id);
+            return updStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.ERROR;
         } catch (Exception e) {
             return Result.ERROR;
         }
@@ -73,7 +94,7 @@ public class ServiceUser {
         try {
             PreparedStatement delStatement = connection.prepareStatement("delete from users where id = ?");
             delStatement.setInt(1, id);
-            return delStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.USER_NOT_FOUND;
+            return delStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.ERROR;
         } catch (Exception e) {
             return Result.ERROR;
         }
@@ -90,7 +111,7 @@ public class ServiceUser {
         try {
             PreparedStatement delStatement = connection.prepareStatement("delete from users where login = ?");
             delStatement.setString(1, login);
-            return delStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.USER_NOT_FOUND;
+            return delStatement.executeUpdate() == 1 ? Result.SUCCESS : Result.ERROR;
         } catch (Exception e) {
             return Result.ERROR;
         }
@@ -106,22 +127,21 @@ public class ServiceUser {
         }
 
         try {
-            PreparedStatement selectStatement = connection.prepareStatement("select * from user where id = ?");
+            PreparedStatement selectStatement = connection.prepareStatement("select * from users where id = ?");
             selectStatement.setInt(1, id);
             ResultSet resultSet = selectStatement.executeQuery();
-
-            if (resultSet.getFetchSize() != 1) {
+            resultSet.next();
+            if (resultSet.getRow() != 1) {
                 return null;
             } else {
-                resultSet.first();
                 return new ApplicationUser.Builder()
                         .id(resultSet.getInt("id"))
                         .login(resultSet.getString("login"))
                         .password(resultSet.getString("password"))
                         .build();
             }
-
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
 
@@ -136,21 +156,19 @@ public class ServiceUser {
         }
 
         try {
-            PreparedStatement selectStatement = connection.prepareStatement("select * from user where login = ?");
+            PreparedStatement selectStatement = connection.prepareStatement("select * from users where login = ?");
             selectStatement.setString(1, login);
             ResultSet resultSet = selectStatement.executeQuery();
-
-            if (resultSet.getFetchSize() != 1) {
+            resultSet.next();
+            if (resultSet.getRow() != 1) {
                 return null;
             } else {
-                resultSet.first();
                 return new ApplicationUser.Builder()
                         .id(resultSet.getInt("id"))
                         .login(resultSet.getString("login"))
                         .password(resultSet.getString("password"))
                         .build();
             }
-
         } catch (Exception e) {
             return null;
         }
@@ -166,24 +184,48 @@ public class ServiceUser {
         }
 
         try {
-            PreparedStatement selectStatement = connection.prepareStatement("select * from user where login = ? and password = ?");
+            PreparedStatement selectStatement = connection.prepareStatement("select * from users where login = ? and password = ?");
             selectStatement.setString(1, login);
             selectStatement.setString(2, password);
             ResultSet resultSet = selectStatement.executeQuery();
-
-            if (resultSet.getFetchSize() != 1) {
+            resultSet.next();
+            if (resultSet.getRow() != 1) {
                 return null;
             } else {
-                resultSet.first();
                 return new ApplicationUser.Builder()
                         .id(resultSet.getInt("id"))
                         .login(resultSet.getString("login"))
                         .password(resultSet.getString("password"))
                         .build();
             }
-
         } catch (Exception e) {
             return null;
+        }
+
+    }
+
+    public void printUserList() {
+
+        try {
+            PreparedStatement selectStatement = connection.prepareStatement("select * from users order by id");
+            ResultSet resultSet = selectStatement.executeQuery();
+            int resultStringCount = 0;
+            while (resultSet.next()) {
+                System.out.println(
+                        new ApplicationUser.Builder()
+                                .id(resultSet.getInt("id"))
+                                .login(resultSet.getString("login"))
+                                .password(resultSet.getString("password"))
+                                .build()
+                                .toString()
+                );
+                resultStringCount = resultSet.getRow();
+            }
+            if (resultStringCount == 0) {
+                System.out.println("Empty table `users`");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
