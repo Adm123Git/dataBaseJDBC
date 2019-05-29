@@ -1,24 +1,23 @@
 package run;
 
 import entities.ApplicationUser;
-import interfaces.DBConnectionImpl;
-import service.ServiceUser;
+import interfaces.JDBCConnectionImpl;
+import service.JDBCServiceUser;
 import util.UtilString;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.sql.SQLException;
 
 public class UserAction {
 
-    private static ServiceUser serviceUser;
+    private static JDBCServiceUser serviceUser;
     private static UtilString utilString = UtilString.getInstance();
 
     static {
         try {
-            serviceUser = ServiceUser.getInstance(DBConnectionImpl.getInstance().getConnection());
+            serviceUser = JDBCServiceUser.getInstance(JDBCConnectionImpl.getInstance().getConnection());
         } catch (SQLException e) {
             e.printStackTrace();
         }

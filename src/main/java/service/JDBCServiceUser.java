@@ -10,21 +10,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Objects;
 
-public class ServiceUser {
+public class JDBCServiceUser {
 
-    private static ServiceUser instance = null;
+    private static JDBCServiceUser instance = null;
     private static UtilString serviceString = UtilString.getInstance();
     private Connection connection;
 
     public enum Result {INPUT_DATA_ERROR, SUCCESS, ERROR}
 
-    private ServiceUser(Connection connection) {
+    private JDBCServiceUser(Connection connection) {
         this.connection = connection;
     }
 
-    public static ServiceUser getInstance(Connection connection) {
+    public static JDBCServiceUser getInstance(Connection connection) {
         if (Objects.isNull(instance)) {
-            instance = new ServiceUser(connection);
+            instance = new JDBCServiceUser(connection);
         }
         return instance;
     }

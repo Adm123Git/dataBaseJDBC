@@ -3,9 +3,9 @@ package interfaces;
 import java.sql.*;
 import java.util.Objects;
 
-public class DBConnectionImpl implements DBConnection {
+public class JDBCConnectionImpl implements JDBCConnection {
 
-    private static final DBConnection instance = new DBConnectionImpl();
+    private static final JDBCConnection instance = new JDBCConnectionImpl();
     private Connection connection = null;
 
     static {
@@ -16,9 +16,9 @@ public class DBConnectionImpl implements DBConnection {
         }
     }
 
-    private DBConnectionImpl() {}
+    private JDBCConnectionImpl() {}
 
-    public static DBConnection getInstance() {
+    public static JDBCConnection getInstance() {
         return instance;
     }
 
