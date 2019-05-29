@@ -9,8 +9,7 @@ public class HbrntSessionFactoryImpl implements HbrntSessionFactory {
     private static final SessionFactory factory;
 
     static {
-        Configuration configuration = new Configuration()
-                .configure("/hibernateconfiguration.cfg.xml");
+        Configuration configuration = new Configuration().configure("/configuration.cfg.xml");
         factory = configuration.buildSessionFactory();
     }
 

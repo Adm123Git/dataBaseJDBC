@@ -1,9 +1,17 @@
-package entities;
+package domain;
 
-public class JDBCApplicationUser {
+import javax.persistence.*;
 
+@Entity
+@Table(name = "users")
+public class ApplicationUser {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "login", unique = true, nullable = false)
     private String userLogin;
+    @Column(name = "password", nullable = false)
     private String password;
 
     public static class Builder {
@@ -26,8 +34,8 @@ public class JDBCApplicationUser {
             return this;
         }
 
-        public JDBCApplicationUser build() {
-            JDBCApplicationUser user = new JDBCApplicationUser();
+        public ApplicationUser build() {
+            ApplicationUser user = new ApplicationUser();
             user.id = id;
             user.userLogin = userLogin;
             user.password = password;
@@ -35,7 +43,7 @@ public class JDBCApplicationUser {
         }
     }
 
-    private JDBCApplicationUser(){}
+    private ApplicationUser(){}
 
     public Integer getId() {
         return id;

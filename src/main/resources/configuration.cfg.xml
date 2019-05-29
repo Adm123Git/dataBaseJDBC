@@ -15,7 +15,7 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">none</property>
 
-        <mapping class="ru.levelup.lesson7.domain.ApplicationUser" />
+        <mapping class="domain.ApplicationUser" />
 
     </session-factory>
 </hibernate-configuration>

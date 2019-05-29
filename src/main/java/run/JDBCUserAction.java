@@ -1,6 +1,6 @@
 package run;
 
-import entities.JDBCApplicationUser;
+import domain.ApplicationUser;
 import interfaces.JDBCConnectionImpl;
 import service.JDBCServiceUser;
 import util.UtilString;
@@ -48,7 +48,7 @@ public class JDBCUserAction {
         serviceUser.printUserList();
         */
         System.out.println("---------------- AUTHORIZATION ------------------");
-        JDBCApplicationUser appUser;
+        ApplicationUser appUser;
         try {
             appUser = userAuth();
             System.out.println(
@@ -62,7 +62,7 @@ public class JDBCUserAction {
         System.out.println("---------------- THE END ------------------");
     }
 
-    private static JDBCApplicationUser userAuth() throws IOException {
+    private static ApplicationUser userAuth() throws IOException {
         try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in))) {
             String login = getNotEmptyDataFromConsole(consoleReader, "Login: ");
             String password = getNotEmptyDataFromConsole(consoleReader, "Password: ");
