@@ -1,25 +1,24 @@
-package run;
+package ru.adm123.run;
 
-import domain.ApplicationUser;
-import interfaces.HbrntSessionFactoryImpl;
-import interfaces.JDBCConnectionImpl;
-import interfaces.UserService;
+import ru.adm123.domains.ApplicationUser;
+import ru.adm123.connections.HbrntSessionFactory;
+import ru.adm123.connections.JDBCConnection;
+import ru.adm123.services.ServiceUser;
 import org.hibernate.SessionFactory;
-import service.HbrntServiceUser;
-import service.JDBCServiceUser;
-import util.UtilString;
+import ru.adm123.services.HbrntServiceUser;
+import ru.adm123.services.JDBCServiceUser;
+import ru.adm123.utils.UtilString;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class UserServiceExecutor {
 
-    private static UserService userService;
+    private static ServiceUser userService;
     private static SessionFactory sessionFactory = null;
     private static UtilString utilString = UtilString.getInstance();
+    //private static final UtilString utilString = new UtilString();
 
     static {
         try {
@@ -29,13 +28,16 @@ public class UserServiceExecutor {
                         .findFirst()
                         .get();
                 if (ormSetString.split("=")[0].equalsIgnoreCase("ORM") && ormSetString.split("=")[1].equalsIgnoreCase("hibernate")) {
-                    sessionFactory = HbrntSessionFactoryImpl.getInstance().getFactory();
+                    sessionFactory = HbrntSessionFactory.getInstance().getFactory();
                     userService = HbrntServiceUser.getInstance(sessionFactory);
+                    //userService = new HbrntServiceUser(sessionFactory);
                 } else {
-                    userService = JDBCServiceUser.getInstance(JDBCConnectionImpl.getInstance().getConnection());
+                    userService = JDBCServiceUser.getInstance(JDBCConnection.getInstance().getConnection());
+                    //userService = new JDBCServiceUser(JDBCConnection.getInstance().getConnection());
                 }
             } catch (Exception e) {
-                userService = JDBCServiceUser.getInstance(JDBCConnectionImpl.getInstance().getConnection());
+                userService = JDBCServiceUser.getInstance(JDBCConnection.getInstance().getConnection());
+                //userService = new JDBCServiceUser(JDBCConnection.getInstance().getConnection());
             }
         } catch (Exception e) {
             e.printStackTrace();

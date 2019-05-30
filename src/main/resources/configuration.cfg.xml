@@ -15,7 +15,7 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">none</property>
 
-        <mapping class="domain.ApplicationUser" />
+        <mapping class="ru.adm123.domains.ApplicationUser" />
 
     </session-factory>
 </hibernate-configuration>

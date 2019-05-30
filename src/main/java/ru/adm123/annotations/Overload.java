@@ -1,4 +1,4 @@
-package annotation;
+package ru.adm123.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

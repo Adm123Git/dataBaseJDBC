@@ -1,4 +1,4 @@
-package domain;
+package ru.adm123.domains;
 
 import javax.persistence.*;
 

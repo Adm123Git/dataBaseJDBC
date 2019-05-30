@@ -1,10 +1,10 @@
-package interfaces;
+package ru.adm123.services;
 
-import annotation.Overload;
+import ru.adm123.annotations.Overload;
 import com.sun.istack.internal.Nullable;
-import domain.ApplicationUser;
+import ru.adm123.domains.ApplicationUser;
 
-public interface UserService {
+public interface ServiceUser {
 
     public enum Result {INPUT_DATA_ERROR, SUCCESS, ERROR}
 

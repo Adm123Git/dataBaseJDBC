@@ -1,11 +1,10 @@
-package interfaces;
+package ru.adm123.connections;
 
 import java.sql.*;
-import java.util.Objects;
 
-public class JDBCConnectionImpl implements JDBCConnection {
+public class JDBCConnection {
 
-    private static final JDBCConnection instance = new JDBCConnectionImpl();
+    private static final JDBCConnection instance = new JDBCConnection();
     private static Connection connection;
 
     static {
@@ -21,13 +20,12 @@ public class JDBCConnectionImpl implements JDBCConnection {
         }
     }
 
-    private JDBCConnectionImpl() {}
+    private JDBCConnection() {}
 
     public static JDBCConnection getInstance() {
         return instance;
     }
 
-    @Override
     public Connection getConnection() {
         return connection;
     }

@@ -1,4 +1,4 @@
-package util;
+package ru.adm123.utils;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -26,6 +26,9 @@ public class UtilString {
     }
 
     public boolean isContainEmptyString(String... strs) {
+        if (strs.length == 0) {
+            return true;
+        }
         return Arrays.stream(strs).anyMatch(this::isEmpty);
     }
 

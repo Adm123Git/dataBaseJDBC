@@ -1,21 +1,21 @@
-package service;
+package ru.adm123.services;
 
-import annotation.Overload;
+import ru.adm123.annotations.Overload;
 import com.sun.istack.internal.Nullable;
-import domain.ApplicationUser;
-import interfaces.UserService;
+import ru.adm123.domains.ApplicationUser;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import util.UtilString;
+import ru.adm123.utils.UtilString;
 
 import java.util.List;
 import java.util.Objects;
 
-public class HbrntServiceUser implements UserService {
+public class HbrntServiceUser implements ServiceUser {
 
     private static HbrntServiceUser instance = null;
-    private static UtilString serviceString = UtilString.getInstance();
+    private static UtilString utilString = UtilString.getInstance();
+    //private UtilString utilString = new UtilString();
     private SessionFactory sessionFactory;
 
     private HbrntServiceUser(SessionFactory sessionFactory) {
@@ -29,11 +29,15 @@ public class HbrntServiceUser implements UserService {
         return instance;
     }
 
+    /*public HbrntServiceUser(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }*/
+
     @Override
     @Overload
     public Result addUser(String login, String password) {
 
-        if (serviceString.isContainEmptyString(login, password)) {
+        if (utilString.isContainEmptyString(login, password)) {
             return Result.INPUT_DATA_ERROR;
         }
 
@@ -57,7 +61,7 @@ public class HbrntServiceUser implements UserService {
     @Overload
     public Result updUser(String login, String newLogin, String newPassword) {
 
-        if (serviceString.isContainEmptyString(login, newLogin, newPassword)) {
+        if (utilString.isContainEmptyString(login, newLogin, newPassword)) {
             return Result.INPUT_DATA_ERROR;
         }
 
@@ -87,7 +91,7 @@ public class HbrntServiceUser implements UserService {
     @Overload
     public Result updUser(int id, String newLogin, String newPassword) {
 
-        if (serviceString.isContainEmptyString(newLogin, newPassword) || id < 1) {
+        if (utilString.isContainEmptyString(newLogin, newPassword) || id < 1) {
             return Result.INPUT_DATA_ERROR;
         }
 
@@ -145,7 +149,7 @@ public class HbrntServiceUser implements UserService {
     @Overload
     public Result delUser(String login) {
 
-        if (serviceString.isEmpty(login)) {
+        if (utilString.isEmpty(login)) {
             return Result.INPUT_DATA_ERROR;
         }
 
@@ -194,7 +198,7 @@ public class HbrntServiceUser implements UserService {
     @Overload
     public ApplicationUser getUser(String login) {
 
-        if (serviceString.isEmpty(login)) {
+        if (utilString.isEmpty(login)) {
             return null;
         }
 
@@ -214,7 +218,7 @@ public class HbrntServiceUser implements UserService {
     @Overload
     public ApplicationUser getUser(String login, String password) {
 
-        if (serviceString.isContainEmptyString(login, password)) {
+        if (utilString.isContainEmptyString(login, password)) {
             return null;
         }
 

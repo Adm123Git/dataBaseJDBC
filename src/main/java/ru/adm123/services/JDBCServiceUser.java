@@ -1,21 +1,25 @@
-package service;
+package ru.adm123.services;
 
-import annotation.Overload;
+import ru.adm123.annotations.Overload;
 import com.sun.istack.internal.Nullable;
-import domain.ApplicationUser;
-import interfaces.UserService;
-import util.UtilString;
+import ru.adm123.domains.ApplicationUser;
+import ru.adm123.utils.UtilString;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Objects;
 
-public class JDBCServiceUser implements UserService {
+public class JDBCServiceUser implements ServiceUser {
 
     private static JDBCServiceUser instance = null;
-    private static UtilString serviceString = UtilString.getInstance();
+    //private static UtilString utilString = UtilString.getInstance();
+    private UtilString utilString;// = new UtilString();
     private Connection connection;
+
+    /*public JDBCServiceUser(Connection connection) {
+        this.connection = connection;
+    }*/
 
     private JDBCServiceUser(Connection connection) {
         this.connection = connection;
@@ -30,7 +34,7 @@ public class JDBCServiceUser implements UserService {
 
     public Result addUser(String login, String password) {
 
-        if (serviceString.isContainEmptyString(login, password)) {
+        if (utilString.isContainEmptyString(login, password)) {
             return Result.INPUT_DATA_ERROR;
         }
 
@@ -49,7 +53,7 @@ public class JDBCServiceUser implements UserService {
     @Overload
     public Result updUser(String login, String newLogin, String newPassword) {
 
-        if (serviceString.isContainEmptyString(login, newLogin, newPassword)) {
+        if (utilString.isContainEmptyString(login, newLogin, newPassword)) {
             return Result.INPUT_DATA_ERROR;
         }
 
@@ -69,7 +73,7 @@ public class JDBCServiceUser implements UserService {
     @Overload
     public Result updUser(int id, String newLogin, String newPassword) {
 
-        if (serviceString.isContainEmptyString(newLogin, newPassword) || id < 1) {
+        if (utilString.isContainEmptyString(newLogin, newPassword) || id < 1) {
             return Result.INPUT_DATA_ERROR;
         }
 
@@ -106,7 +110,7 @@ public class JDBCServiceUser implements UserService {
     @Overload
     public Result delUser(String login) {
 
-        if (serviceString.isEmpty(login)) {
+        if (utilString.isEmpty(login)) {
             return Result.INPUT_DATA_ERROR;
         }
 
@@ -155,7 +159,7 @@ public class JDBCServiceUser implements UserService {
     @Overload
     public ApplicationUser getUser(String login) {
 
-        if (serviceString.isEmpty(login)) {
+        if (utilString.isEmpty(login)) {
             return null;
         }
 
@@ -184,7 +188,7 @@ public class JDBCServiceUser implements UserService {
     @Overload
     public ApplicationUser getUser(String login, String password) {
 
-        if (serviceString.isContainEmptyString(login, password)) {
+        if (utilString.isContainEmptyString(login, password)) {
             return null;
         }
 
