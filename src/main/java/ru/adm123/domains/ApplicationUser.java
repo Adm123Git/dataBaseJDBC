@@ -1,9 +1,16 @@
 package ru.adm123.domains;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
+@Setter
+@Getter
+@EqualsAndHashCode
 public class ApplicationUser {
 
     @Id
@@ -45,7 +52,7 @@ public class ApplicationUser {
 
     private ApplicationUser(){}
 
-    public Integer getId() {
+    /*public Integer getId() {
         return id;
     }
 
@@ -67,7 +74,7 @@ public class ApplicationUser {
 
     public void setPassword(String password) {
         this.password = password;
-    }
+    }*/
 
     @Override
     public String toString() {

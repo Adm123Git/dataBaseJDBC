@@ -14,7 +14,7 @@ import java.util.Objects;
 public class HbrntServiceUser implements ServiceUser {
 
     private static HbrntServiceUser instance = null;
-    private static UtilString utilString = UtilString.getInstance();
+    private UtilString utilString = UtilString.getInstance();
     private SessionFactory sessionFactory;
 
     private HbrntServiceUser(SessionFactory sessionFactory) {
