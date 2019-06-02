@@ -258,4 +258,107 @@ public class TestHbrntServiceUser {
 
     }
 
+    @Test
+    public void testUpdUserById_IdIsZero_returnINPUTDATAERROR() {
+
+        returnUpdUserByIdINPUTDATAERROR(0, " 123 ", " 456 ");
+
+    }
+
+    @Test
+    public void testUpdUserByLogin_IdIsNumber_returnSUCCESS() {
+
+        int id = 1;
+        String newLogin = " 456 ";
+        String newPassword = " 789 ";
+        user = new ApplicationUser.Builder()
+                .id(id)
+                .login(newLogin)
+                .password(newPassword)
+                .build();
+        userList = new ArrayList<>();
+        userList.add(user);
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ServiceUser.Result result = serviceUser.updUser(id, newLogin, newPassword);
+
+        Mockito.verify(utilString, times(1)).isContainEmptyString(newLogin, newPassword);
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).beginTransaction();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("id", id);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Mockito.verify(session, times(1)).update(user);
+        Mockito.verify(transaction, times(1)).commit();
+        Assert.assertSame(result, SUCCESS);
+
+    }
+
+    @Test
+    public void testUpdUserByLogin_IdIsNumber_returnERROR() {
+        int id = 1;
+        String newLogin = " 456 ";
+        String newPassword = " 789 ";
+        user = new ApplicationUser.Builder()
+                .id(1)
+                .login(newLogin)
+                .password(newPassword)
+                .build();
+        userList = new ArrayList<>();
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ServiceUser.Result result = serviceUser.updUser(id, newLogin, newPassword);
+
+        Mockito.verify(utilString, times(1)).isContainEmptyString(newLogin, newPassword);
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).beginTransaction();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("id", id);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Mockito.verify(session, never()).update(user);
+        Mockito.verify(transaction, never()).commit();
+        Assert.assertSame(result, ERROR);
+
+    }
+
+    @Test
+    public void testUpdUserById_newLoginIsNull_returnINPUTDATAERROR() {
+        returnUpdUserByIdINPUTDATAERROR(1, null, " 456 ");
+    }
+
+    @Test
+    public void testUpdUserById_newLoginIsEmpty_returnINPUTDATAERROR() {
+        returnUpdUserByIdINPUTDATAERROR(1, "", " 456 ");
+    }
+
+    @Test
+    public void testUpdUserById_newLoginIsSpaces_returnINPUTDATAERROR() {
+        returnUpdUserByIdINPUTDATAERROR(1, "   ", " 456 ");
+    }
+
+    @Test
+    public void testUpdUserById_newPasswordIsNull_returnINPUTDATAERROR() {
+        returnUpdUserByIdINPUTDATAERROR(1, " 123 ", null);
+    }
+
+    @Test
+    public void testUpdUserById_newPasswordIsEmpty_returnINPUTDATAERROR() {
+        returnUpdUserByIdINPUTDATAERROR(1, " 123 ", "");
+    }
+
+    @Test
+    public void testUpdUserById_newPasswordIsSpaces_returnINPUTDATAERROR() {
+        returnUpdUserByIdINPUTDATAERROR(1, " 123 ", "   ");
+    }
+
+    private void returnUpdUserByIdINPUTDATAERROR(int id, String newLogin, String newPassword) {
+
+        ServiceUser.Result result = serviceUser.updUser(id, newLogin, newPassword);
+
+        Mockito.verify(utilString, times(1)).isContainEmptyString(newLogin, newPassword);
+        Mockito.verify(sessionFactory, never()).openSession();
+        Assert.assertSame(result, ServiceUser.Result.INPUT_DATA_ERROR);
+
+    }
+
 }
