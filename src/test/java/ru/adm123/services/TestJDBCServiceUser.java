@@ -511,23 +511,48 @@ public class TestJDBCServiceUser {
     }
 
     @Test
-    public void getUserByLoginPassword_loginIsNull_returnINPUTDATAERROR() throws SQLException {
+    public void getUserByLoginPassword_loginIsNull_returnNULL() throws SQLException {
         returnGetUserByLoginPasswordNULL(null, "456");
     }
 
     @Test
-    public void getUserByLoginPassword_loginIsEmpty_returnINPUTDATAERROR() throws SQLException {
+    public void getUserByLoginPassword_loginIsEmpty_returnNULL() throws SQLException {
+        returnGetUserByLoginPasswordNULL("", "456");
+    }
+
+    @Test
+    public void getUserByLoginPassword_loginIsSpaces_returnNULL() throws SQLException {
         returnGetUserByLoginPasswordNULL("    ", "456");
     }
 
     @Test
-    public void getUserByLoginPassword_passwordIsNull_returnINPUTDATAERROR() throws SQLException {
+    public void getUserByLoginPassword_passwordIsNull_returnNULL() throws SQLException {
         returnGetUserByLoginPasswordNULL("123", null);
     }
 
     @Test
-    public void getUserByLoginPassword_passwordIsEmpty_returnINPUTDATAERROR() throws SQLException {
-        returnGetUserByLoginPasswordNULL("123", "    ");
+    public void getUserByLoginPassword_passwordIsEmpty_returnNULL() throws SQLException {
+        returnGetUserByLoginPasswordNULL("123", "");
+    }
+
+    @Test
+    public void getUserByLoginPassword_passwordIsSpaces_returnNULL() throws SQLException {
+        returnGetUserByLoginPasswordNULL("123", "   ");
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsNull_returnNULL() throws SQLException {
+        returnGetUserByLoginPasswordNULL(null, null);
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsEmpty_returnINPUTDATAERROR() throws SQLException {
+        returnGetUserByLoginPasswordNULL("", "");
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsSpaces_returnNULL() throws SQLException {
+        returnGetUserByLoginPasswordNULL("   ", "   ");
     }
 
     private void returnGetUserByLoginPasswordNULL(String login, String password) throws SQLException {

@@ -13,8 +13,7 @@ import java.util.Objects;
 public class JDBCServiceUser implements ServiceUser {
 
     private static JDBCServiceUser instance = null;
-    //private static UtilString utilString = UtilString.getInstance();
-    private UtilString utilString;// = new UtilString();
+    private UtilString utilString = UtilString.getInstance();
     private Connection connection;
 
     /*public JDBCServiceUser(Connection connection) {

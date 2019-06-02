@@ -15,7 +15,6 @@ public class HbrntServiceUser implements ServiceUser {
 
     private static HbrntServiceUser instance = null;
     private static UtilString utilString = UtilString.getInstance();
-    //private UtilString utilString = new UtilString();
     private SessionFactory sessionFactory;
 
     private HbrntServiceUser(SessionFactory sessionFactory) {
@@ -28,10 +27,6 @@ public class HbrntServiceUser implements ServiceUser {
         }
         return instance;
     }
-
-    /*public HbrntServiceUser(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }*/
 
     @Override
     @Overload
