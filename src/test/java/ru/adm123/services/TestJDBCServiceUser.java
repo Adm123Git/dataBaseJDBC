@@ -510,4 +510,19 @@ public class TestJDBCServiceUser {
 
     }
 
+    @Test
+    public void getUserByLoginPassword_loginIsNull_returnINPUTDATAERROR() throws SQLException {
+        returnGetUserByLoginPasswordNULL(null, "123");
+    }
+
+    private void returnGetUserByLoginPasswordNULL(String login, String password) throws SQLException {
+
+        ApplicationUser user = serviceUser.getUser(login, password);
+        Mockito.verify(utilString, times(1)).isContainEmptyString(login, password);
+        Mockito.verify(connection, never()).prepareStatement(anyString());
+        Mockito.verify(preparedStatement, never()).executeQuery();
+        Assert.assertSame(user, null);
+
+    }
+
 }
