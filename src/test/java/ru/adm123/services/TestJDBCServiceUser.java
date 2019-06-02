@@ -512,7 +512,22 @@ public class TestJDBCServiceUser {
 
     @Test
     public void getUserByLoginPassword_loginIsNull_returnINPUTDATAERROR() throws SQLException {
-        returnGetUserByLoginPasswordNULL(null, "123");
+        returnGetUserByLoginPasswordNULL(null, "456");
+    }
+
+    @Test
+    public void getUserByLoginPassword_loginIsEmpty_returnINPUTDATAERROR() throws SQLException {
+        returnGetUserByLoginPasswordNULL("    ", "456");
+    }
+
+    @Test
+    public void getUserByLoginPassword_passwordIsNull_returnINPUTDATAERROR() throws SQLException {
+        returnGetUserByLoginPasswordNULL("123", null);
+    }
+
+    @Test
+    public void getUserByLoginPassword_passwordIsEmpty_returnINPUTDATAERROR() throws SQLException {
+        returnGetUserByLoginPasswordNULL("123", "    ");
     }
 
     private void returnGetUserByLoginPasswordNULL(String login, String password) throws SQLException {
@@ -522,6 +537,45 @@ public class TestJDBCServiceUser {
         Mockito.verify(connection, never()).prepareStatement(anyString());
         Mockito.verify(preparedStatement, never()).executeQuery();
         Assert.assertSame(user, null);
+
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsNormal_returnSUCCESS() throws SQLException {
+
+        String login = " 1234 ";
+        String password = " 5678 ";
+        Mockito.when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        Mockito.when(resultSet.getRow()).thenReturn(1);
+
+        ApplicationUser result = serviceUser.getUser(login, password);
+        result.setUserLogin(login);
+        result.setPassword(password);
+
+        Mockito.verify(connection, times(1)).prepareStatement(anyString());
+        Mockito.verify(preparedStatement, times(1)).executeQuery();
+        Mockito.verify(resultSet, times(1)).next();
+        Mockito.verify(resultSet, times(1)).getRow();
+        Assert.assertSame(result.getUserLogin(), login);
+        Assert.assertSame(result.getPassword(), password);
+
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsNormal_returnERROR() throws SQLException {
+
+        String login = " 1234 ";
+        String password = " 5678 ";
+        Mockito.when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        Mockito.when(resultSet.getRow()).thenReturn(0);
+
+        ApplicationUser result = serviceUser.getUser(login, password);
+
+        Mockito.verify(connection, times(1)).prepareStatement(anyString());
+        Mockito.verify(preparedStatement, times(1)).executeQuery();
+        Mockito.verify(resultSet, times(1)).next();
+        Mockito.verify(resultSet, times(1)).getRow();
+        Assert.assertSame(result, null);
 
     }
 
