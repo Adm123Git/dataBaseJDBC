@@ -4,8 +4,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.hibernate.query.internal.QueryImpl;
-import org.hibernate.query.spi.QueryImplementor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +16,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import ru.adm123.domains.ApplicationUser;
 import ru.adm123.utils.UtilString;
 
-import javax.persistence.TypedQuery;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -221,7 +218,7 @@ public class TestHbrntServiceUser {
     }
 
     @Test
-    public void testUpdUserByLogin_inputDataIsNormalQueryIsSuccess_returnERROR() {
+    public void testUpdUserByLogin_inputDataIsNormalQueryIsError_returnERROR() {
 
         String login = " 123 ";
         String newLogin = " 456 ";
@@ -351,6 +348,58 @@ public class TestHbrntServiceUser {
         returnUpdUserByIdINPUTDATAERROR(1, " 123 ", "   ");
     }
 
+    @Test
+    public void testUpdUserById_inputDataIsNormalQueryIsSuccess_returnERROR() {
+
+        int id = 1;
+        String newLogin = " 456 ";
+        String newPassword = " 789 ";
+        userList = new ArrayList<>();
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ServiceUser.Result result = serviceUser.updUser(id, newLogin, newPassword);
+
+        Mockito.verify(utilString, times(1)).isContainEmptyString(newLogin, newPassword);
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).beginTransaction();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("id", id);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Mockito.verify(session, never()).update(user);
+        Mockito.verify(transaction, never()).commit();
+        Assert.assertSame(result, ERROR);
+
+    }
+
+    @Test
+    public void testUpdUserById_inputDataIsNormalQueryIsSuccess_returnSUCCESS() {
+
+        int id = 1;
+        String newLogin = " 456 ";
+        String newPassword = " 789 ";
+        user = new ApplicationUser.Builder()
+                .id(1)
+                .login(newLogin)
+                .password(newPassword)
+                .build();
+        userList = new ArrayList<>();
+        userList.add(user);
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ServiceUser.Result result = serviceUser.updUser(id, newLogin, newPassword);
+
+        Mockito.verify(utilString, times(1)).isContainEmptyString(newLogin, newPassword);
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).beginTransaction();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("id", id);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Mockito.verify(session, times(1)).update(user);
+        Mockito.verify(transaction, times(1)).commit();
+        Assert.assertSame(result, SUCCESS);
+
+    }
+
     private void returnUpdUserByIdINPUTDATAERROR(int id, String newLogin, String newPassword) {
 
         ServiceUser.Result result = serviceUser.updUser(id, newLogin, newPassword);
@@ -358,6 +407,349 @@ public class TestHbrntServiceUser {
         Mockito.verify(utilString, times(1)).isContainEmptyString(newLogin, newPassword);
         Mockito.verify(sessionFactory, never()).openSession();
         Assert.assertSame(result, ServiceUser.Result.INPUT_DATA_ERROR);
+
+    }
+
+    @Test
+    public void testDelUserById_idIsZero_returnINPUTDATAERROR() {
+
+        int id = 0;
+
+        ServiceUser.Result result = serviceUser.delUser(id);
+
+        Mockito.verify(sessionFactory, never()).openSession();
+        Assert.assertSame(result, INPUT_DATA_ERROR);
+
+    }
+
+    @Test
+    public void testDelUserById_idIsNumber_returnSUCCESS() {
+
+        int id = 1;
+        user = new ApplicationUser.Builder()
+                .id(1)
+                .login("123")
+                .password("456")
+                .build();
+        userList = new ArrayList<>();
+        userList.add(user);
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ServiceUser.Result result = serviceUser.delUser(id);
+
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).beginTransaction();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("id", id);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Mockito.verify(session, times(1)).delete(user);
+        Mockito.verify(transaction, times(1)).commit();
+        Assert.assertSame(result, SUCCESS);
+
+    }
+
+    @Test
+    public void testDelUserById_idIsNumber_returnERROR() {
+
+        int id = 1;
+        userList = new ArrayList<>();
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ServiceUser.Result result = serviceUser.delUser(id);
+
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).beginTransaction();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("id", id);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Mockito.verify(session, never()).delete(user);
+        Mockito.verify(transaction, never()).commit();
+        Assert.assertSame(result, ERROR);
+
+    }
+
+    @Test
+    public void testDelUserByLogin_loginIsNull_returnINPUTDATAERROR() {
+        returnDelUserByLoginINPUTDATAERROR(null);
+    }
+
+    @Test
+    public void testDelUserByLogin_loginIsEmpty_returnINPUTDATAERROR() {
+        returnDelUserByLoginINPUTDATAERROR("");
+    }
+
+    @Test
+    public void testDelUserByLogin_loginIsSpaces_returnINPUTDATAERROR() {
+        returnDelUserByLoginINPUTDATAERROR("    ");
+    }
+
+    @Test
+    public void testDelUserByLogin_loginIsNormal_returnSUCCESS() {
+
+        String login = " 1234 ";
+        user = new ApplicationUser.Builder()
+                .id(1)
+                .login(login)
+                .password("456")
+                .build();
+        userList = new ArrayList<>();
+        userList.add(user);
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ServiceUser.Result result = serviceUser.delUser(login);
+
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).beginTransaction();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("login", login);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Mockito.verify(session, times(1)).delete(user);
+        Mockito.verify(transaction, times(1)).commit();
+        Assert.assertSame(result, SUCCESS);
+
+    }
+
+    @Test
+    public void testDelUserByLogin_loginIsNormal_returnERROR() {
+
+        String login = " 1234 ";
+        userList = new ArrayList<>();
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ServiceUser.Result result = serviceUser.delUser(login);
+
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).beginTransaction();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("login", login);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Mockito.verify(session, never()).delete(user);
+        Mockito.verify(transaction, never()).commit();
+        Assert.assertSame(result, ERROR);
+
+    }
+
+    private void returnDelUserByLoginINPUTDATAERROR(String login) {
+
+        ServiceUser.Result result = serviceUser.delUser(login);
+
+        Mockito.verify(utilString, times(1)).isEmpty(login);
+        Mockito.verify(sessionFactory, never()).openSession();
+        Assert.assertSame(result, ServiceUser.Result.INPUT_DATA_ERROR);
+
+    }
+
+    @Test
+    public void getUserById_idIsZero_returnNULL() {
+
+        int id = 0;
+
+        ApplicationUser result = serviceUser.getUser(id);
+
+        Mockito.verify(sessionFactory, never()).openSession();
+        Assert.assertSame(result, null);
+
+    }
+
+    @Test
+    public void getUserById_idIsNormal_returnNULL() {
+
+        int id = 1;
+        userList = new ArrayList<>();
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+        ApplicationUser result = serviceUser.getUser(id);
+
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("id", id);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Assert.assertSame(result, null);
+
+    }
+
+    @Test
+    public void getUserById_idIsNormal_returnSUCCESS() {
+
+        int id = 1;
+        user = new ApplicationUser.Builder()
+                .id(1)
+                .login("123")
+                .password("456")
+                .build();
+        userList = new ArrayList<>();
+        userList.add(user);
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+        ApplicationUser result = serviceUser.getUser(id);
+
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("id", id);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Assert.assertSame(result, user);
+
+    }
+
+    @Test
+    public void getUserByLogin_loginIsNull_returnNULL() {
+        returnGetUserByLoginNULL(null);
+    }
+
+    @Test
+    public void getUserByLogin_loginIsEmpty_returnNULL() {
+        returnGetUserByLoginNULL("");
+    }
+
+    @Test
+    public void getUserByLogin_loginIsSpaces_returnNULL(){
+        returnGetUserByLoginNULL("    ");
+    }
+
+    @Test
+    public void getUserByLogin_loginIsNormal_returnNULL() {
+
+        String login = "123";
+        userList = new ArrayList<>();
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+        ApplicationUser result = serviceUser.getUser(login);
+
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("login", login);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Assert.assertSame(result, null);
+
+    }
+
+    @Test
+    public void getUserByLogin_loginIsNormal_returnSUCCESS() {
+
+        String login = "123";
+        user = new ApplicationUser.Builder()
+                .id(1)
+                .login(login)
+                .password("456")
+                .build();
+        userList = new ArrayList<>();
+        userList.add(user);
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+        ApplicationUser result = serviceUser.getUser(login);
+
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("login", login);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Assert.assertSame(result, user);
+
+    }
+
+    private void returnGetUserByLoginNULL(String login) {
+
+        ApplicationUser result = serviceUser.getUser(login);
+
+        Mockito.verify(utilString, times(1)).isEmpty(login);
+        Mockito.verify(sessionFactory, never()).openSession();
+        Assert.assertSame(result, null);
+
+    }
+
+    @Test
+    public void getUserByLoginPassword_loginIsNull_returnNULL() {
+        returnGetUserByLoginPasswordNULL(null, "456");
+    }
+
+    @Test
+    public void getUserByLoginPassword_loginIsEmpty_returnNULL() {
+        returnGetUserByLoginPasswordNULL("", "456");
+    }
+
+    @Test
+    public void getUserByLoginPassword_loginIsSpaces_returnNULL() {
+        returnGetUserByLoginPasswordNULL("    ", "456");
+    }
+
+    @Test
+    public void getUserByLoginPassword_passwordIsNull_returnNULL() {
+        returnGetUserByLoginPasswordNULL("123", null);
+    }
+
+    @Test
+    public void getUserByLoginPassword_passwordIsEmpty_returnNULL() {
+        returnGetUserByLoginPasswordNULL("123", "");
+    }
+
+    @Test
+    public void getUserByLoginPassword_passwordIsSpaces_returnNULL() {
+        returnGetUserByLoginPasswordNULL("123", "   ");
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsNull_returnNULL() {
+        returnGetUserByLoginPasswordNULL(null, null);
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsEmpty_returnNULL() {
+        returnGetUserByLoginPasswordNULL("", "");
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsSpaces_returnNULL() {
+        returnGetUserByLoginPasswordNULL("   ", "   ");
+    }
+
+    private void returnGetUserByLoginPasswordNULL(String login, String password) {
+
+        ApplicationUser result = serviceUser.getUser(login, password);
+
+        Mockito.verify(utilString, times(1)).isContainEmptyString(login, password);
+        Mockito.verify(sessionFactory, never()).openSession();
+        Assert.assertSame(result, null);
+
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsNormal_returnSUCCESS() {
+
+        String login = "123";
+        String password = "456";
+        user = new ApplicationUser.Builder()
+                .id(1)
+                .login(login)
+                .password(password)
+                .build();
+        userList = new ArrayList<>();
+        userList.add(user);
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ApplicationUser result = serviceUser.getUser(login, password);
+
+        Mockito.verify(utilString, times(1)).isContainEmptyString(login, password);
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("login", login);
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("password", password);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Assert.assertSame(result, user);
+
+    }
+
+    @Test
+    public void getUserByLoginPassword_dataIsNormal_returnNULL() {
+
+        String login = "123";
+        String password = "456";
+        userList = new ArrayList<>();
+        Mockito.when(applicationUserQuery.getResultList()).thenReturn(userList);
+
+        ApplicationUser result = serviceUser.getUser(login, password);
+
+        Mockito.verify(utilString, times(1)).isContainEmptyString(login, password);
+        Mockito.verify(sessionFactory, times(1)).openSession();
+        Mockito.verify(session, times(1)).createQuery(anyString(), eq(ApplicationUser.class));
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("login", login);
+        Mockito.verify(applicationUserQuery, times(1)).setParameter("password", password);
+        Mockito.verify(applicationUserQuery, times(1)).getResultList();
+        Assert.assertSame(result, null);
 
     }
 

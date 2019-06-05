@@ -95,7 +95,6 @@ public class HbrntServiceUser implements ServiceUser {
             List<ApplicationUser> resultList = session.createQuery("from ApplicationUser where id = :id", ApplicationUser.class)
                     .setParameter("id", id)
                     .getResultList();
-
             if (resultList.size() != 1) {
                 return Result.ERROR;
             } else {

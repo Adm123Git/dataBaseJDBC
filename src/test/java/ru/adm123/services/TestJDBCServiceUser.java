@@ -546,7 +546,7 @@ public class TestJDBCServiceUser {
     }
 
     @Test
-    public void getUserByLoginPassword_dataIsEmpty_returnINPUTDATAERROR() throws SQLException {
+    public void getUserByLoginPassword_dataIsEmpty_returnNULL() throws SQLException {
         returnGetUserByLoginPasswordNULL("", "");
     }
 
@@ -587,7 +587,7 @@ public class TestJDBCServiceUser {
     }
 
     @Test
-    public void getUserByLoginPassword_dataIsNormal_returnERROR() throws SQLException {
+    public void getUserByLoginPassword_dataIsNormal_returnNULL() throws SQLException {
 
         String login = " 1234 ";
         String password = " 5678 ";
